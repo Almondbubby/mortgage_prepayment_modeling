@@ -178,18 +178,3 @@ python scripts/oos_eval.py
 
 **ML benchmarks**: LightGBM achieves the highest OOS AUC (0.7823), followed by random forest (0.7787) and neural network (0.7777). All outperform the logistic model (0.7573), but the logistic model offers full coefficient interpretability and economic transparency. Feature importance from the tree-based models confirms that `refinance_incentive_pct`, `lag_incentive`, and `age` are the most predictive variables.
 
-## Discussion
-
-### Design Decisions
-
-- **Two-component additive model**: Separating turnover and refinance reflects the economic reality that these are distinct prepayment channels with different drivers. Estimating turnover on negative-incentive loans isolates it from refinance behavior.
-- **Piecewise linear basis functions**: Provide flexible nonlinearity while remaining interpretable. Each segment slope has a direct economic meaning.
-- **Monotonicity constraints**: Impose economically sensible relationships (e.g., higher rate incentive must increase prepayment probability). Without these, the optimizer can exploit noise to produce counterintuitive patterns.
-- **ML benchmarks**: Provide an upper bound on predictive performance achievable with the same features, quantifying the cost of interpretability.
-
-### Limitations
-
-- **Additive probability model**: `P(turnover) + P(refinance)` can theoretically exceed 1, requiring clipping. A multiplicative formulation (e.g., competing hazards) would be more theoretically sound.
-- **No loan-level dynamics**: The model treats each monthly observation independently. It does not explicitly model loan-level sequences or path dependence beyond the `burnout` variable.
-- **Limited feature set**: Variables like credit score, loan purpose, property type, and geographic identifiers are not in the dataset.
-- **Single vintage**: Estimated on 2018Q1 originations only. Coefficients may not generalize to other vintages or market regimes.
